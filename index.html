@@ -131,6 +131,11 @@
   <input type="text" id="dob" placeholder="dd/mm/yyyy" maxlength="10" data-birth="70/90/6002" data-decoys="56/39/5076,37/64/7088,97/75/5075,14/86/7099" autocomplete="off">
   <button onclick="checkDOB()">Vào xem</button>
 
+  <audio id="backgroundMusic" loop preload="auto">
+    <source src="trungthu2025.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
   <script>
     function checkDOB() {
       const dobInput = document.getElementById('dob').value;
@@ -183,6 +188,44 @@
 
     document.addEventListener('DOMContentLoaded', function() {
       const dobInput = document.getElementById('dob');
+      const backgroundMusic = document.getElementById('backgroundMusic');
+
+      function playBackgroundMusic() {
+        if (backgroundMusic) {
+          const savedTime = sessionStorage.getItem('audioCurrentTime');
+          const savedVolume = sessionStorage.getItem('audioVolume');
+
+          if (savedVolume) {
+            backgroundMusic.volume = parseFloat(savedVolume);
+          } else {
+            backgroundMusic.volume = 0.4;
+          }
+
+          backgroundMusic.play().then(() => {
+            if (savedTime) {
+              backgroundMusic.currentTime = parseFloat(savedTime);
+            }
+          }).catch(e => {
+            console.log('Không thể phát nhạc nền:', e.message);
+          });
+        }
+      }
+
+      playBackgroundMusic();
+
+      document.addEventListener('click', playBackgroundMusic, { once: true });
+      document.addEventListener('touchstart', playBackgroundMusic, { once: true });
+
+      function saveAudioState() {
+        if (backgroundMusic) {
+          sessionStorage.setItem('audioCurrentTime', backgroundMusic.currentTime.toString());
+          sessionStorage.setItem('audioVolume', backgroundMusic.volume.toString());
+        }
+      }
+
+      setInterval(saveAudioState, 1000);
+
+      window.addEventListener('beforeunload', saveAudioState);
 
       dobInput.addEventListener('input', function(e) {
         let value = e.target.value;

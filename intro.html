@@ -64,7 +64,53 @@
 <body>
   <div class="intro">Sắp tới Trung Thu 2025 rồi cậu nhỉ? Trung thu này, tớ có món quà dành tặng cậu, vài lời tâm sự của tớ sẽ ẩn giấu trong lồng đèn, cậu hãy mở nó ra nhé!</div>
 
+  <audio id="backgroundMusic" loop preload="auto">
+    <source src="trungthu2025.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const backgroundMusic = document.getElementById('backgroundMusic');
+
+      function playBackgroundMusic() {
+        if (backgroundMusic) {
+          const savedTime = sessionStorage.getItem('audioCurrentTime');
+          const savedVolume = sessionStorage.getItem('audioVolume');
+
+          if (savedVolume) {
+            backgroundMusic.volume = parseFloat(savedVolume);
+          } else {
+            backgroundMusic.volume = 0.4;
+          }
+
+          backgroundMusic.play().then(() => {
+            if (savedTime) {
+              backgroundMusic.currentTime = parseFloat(savedTime);
+            }
+          }).catch(e => {
+            console.log('Không thể phát nhạc nền:', e.message);
+          });
+        }
+      }
+
+      playBackgroundMusic();
+
+      document.addEventListener('click', playBackgroundMusic, { once: true });
+      document.addEventListener('touchstart', playBackgroundMusic, { once: true });
+
+      function saveAudioState() {
+        if (backgroundMusic) {
+          sessionStorage.setItem('audioCurrentTime', backgroundMusic.currentTime.toString());
+          sessionStorage.setItem('audioVolume', backgroundMusic.volume.toString());
+        }
+      }
+
+      setInterval(saveAudioState, 1000);
+
+      window.addEventListener('beforeunload', saveAudioState);
+    });
+
     setTimeout(()=>{
       window.location.href = "main.html";
     }, 6000);

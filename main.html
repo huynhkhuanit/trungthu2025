@@ -476,6 +476,12 @@
   <div class="stars" id="stars"></div>
   <div class="moon"></div>
 
+  <!-- Hidden audio element for continuous background music -->
+  <audio id="backgroundMusic" loop preload="auto">
+    <source src="trungthu2025.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
   <div class="message-container" id="messageContainer" onclick="hideMessage()">
     <div id="message" onclick="event.stopPropagation()">
       <button class="close-btn" onclick="hideMessage()">×</button>
@@ -656,6 +662,47 @@
         starsContainer.appendChild(star);
       }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const backgroundMusic = document.getElementById('backgroundMusic');
+
+      function playBackgroundMusic() {
+        if (backgroundMusic) {
+          const savedTime = sessionStorage.getItem('audioCurrentTime');
+          const savedVolume = sessionStorage.getItem('audioVolume');
+
+          if (savedVolume) {
+            backgroundMusic.volume = parseFloat(savedVolume);
+          } else {
+            backgroundMusic.volume = 0.4;
+          }
+
+          backgroundMusic.play().then(() => {
+            if (savedTime) {
+              backgroundMusic.currentTime = parseFloat(savedTime);
+            }
+          }).catch(e => {
+            console.log('Không thể phát nhạc nền:', e.message);
+          });
+        }
+      }
+
+      playBackgroundMusic();
+
+      document.addEventListener('click', playBackgroundMusic, { once: true });
+      document.addEventListener('touchstart', playBackgroundMusic, { once: true });
+
+      function saveAudioState() {
+        if (backgroundMusic) {
+          sessionStorage.setItem('audioCurrentTime', backgroundMusic.currentTime.toString());
+          sessionStorage.setItem('audioVolume', backgroundMusic.volume.toString());
+        }
+      }
+
+      setInterval(saveAudioState, 1000);
+
+      window.addEventListener('beforeunload', saveAudioState);
+    });
 
     window.addEventListener('load', createStars);
   </script>
