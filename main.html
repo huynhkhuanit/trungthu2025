@@ -12,7 +12,7 @@
       overflow: hidden;
       height: 100vh;
       position: relative;
-      touch-action: pan-y; /* Prevent default touch behaviors */
+      touch-action: pan-y;
     }
 
     .moon {
@@ -420,7 +420,6 @@
         font-size: clamp(30px, 6vw, 45px);
       }
 
-      /* Reduce number of lanterns on mobile for better performance */
       .lantern:nth-child(n+16) {
         display: none;
       }
@@ -448,7 +447,6 @@
         font-size: clamp(25px, 5vw, 35px);
       }
 
-      /* Further reduce lanterns on small screens */
       .lantern:nth-child(n+12) {
         display: none;
       }
@@ -459,7 +457,6 @@
     }
 
     @media (max-width: 320px) {
-      /* Minimal lanterns for very small screens */
       .lantern:nth-child(n+8) {
         display: none;
       }
@@ -479,7 +476,6 @@
   <div class="stars" id="stars"></div>
   <div class="moon"></div>
 
-  <!-- Message Container -->
   <div class="message-container" id="messageContainer" onclick="hideMessage()">
     <div id="message" onclick="event.stopPropagation()">
       <button class="close-btn" onclick="hideMessage()">×</button>
@@ -491,7 +487,6 @@
     let messages = [];
     let shuffledMessageIndices = [];
 
-    // Hàm xáo trộn mảng Fisher-Yates
     function shuffleArray(array) {
       const shuffled = [...array];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -501,18 +496,14 @@
       return shuffled;
     }
 
-    // Load messages từ file JSON
     fetch('messages.json')
       .then(response => response.json())
       .then(data => {
         messages = data.messages;
-        // Tạo danh sách messages mở rộng để đảm bảo tất cả messages xuất hiện trong 15-20 lượt đầu
         const extendedMessages = [];
-        // Thêm 2 bản sao của mỗi message để đảm bảo xuất hiện đủ
         for (let i = 0; i < 2; i++) {
           extendedMessages.push(...messages.map((_, idx) => idx));
         }
-        // Thêm 10 messages bổ sung để đủ 25 lồng đèn (15 × 2 - 5 = 25)
         const remainingSlots = 25 - extendedMessages.length;
         for (let i = 0; i < remainingSlots; i++) {
           extendedMessages.push(Math.floor(Math.random() * messages.length));
@@ -522,12 +513,10 @@
       })
       .catch(error => {
         console.error('Lỗi tải messages:', error);
-        // Fallback messages nếu không load được file
         messages = [
           "💌 Gửi em, ánh trăng này là của chúng ta, Trung Thu này anh chỉ mong em luôn vui vẻ, hạnh phúc bên anh mãi mãi 💕",
           "🌙 Em yêu, anh nhớ em lắm! Mong rằng năm nay chúng ta sẽ cùng nhau ngắm trăng và tạo thêm nhiều kỷ niệm đẹp 💖"
         ];
-        // Tạo danh sách messages mở rộng cho fallback
         const extendedMessages = [];
         for (let i = 0; i < 2; i++) {
           extendedMessages.push(...messages.map((_, idx) => idx));
@@ -541,7 +530,6 @@
       });
 
     function createLanterns() {
-      // Điều chỉnh số lượng lồng đèn dựa trên kích thước màn hình
       const screenWidth = window.innerWidth;
       let lanternCount = 25; // Desktop
 
@@ -553,18 +541,15 @@
         lanternCount = 16; // Tablet
       }
 
-      // Tạo nhiều lồng đèn bay ngẫu nhiên
       for(let i = 0; i < lanternCount; i++){
         let lantern = document.createElement("div");
         lantern.className = "lantern";
 
-        // Gán vị trí ngẫu nhiên
         lantern.style.left = Math.random()*85 + "vw";
         lantern.style.animationDuration = (15 + Math.random()*20) + "s";
         lantern.style.animationDelay = Math.random()*12 + "s";
         lantern.style.animationTimingFunction = "ease-out";
 
-        // Tạo khung lồng đèn
         let lanternFrame = document.createElement("div");
         lanternFrame.className = "lantern-frame";
 
@@ -585,7 +570,6 @@
         lantern.appendChild(lanternBody);
         lantern.appendChild(lanternTassel);
 
-        // Gán message riêng cho từng lồng đèn - sử dụng danh sách đã xáo trộn
         const messageIndex = shuffledMessageIndices[i % shuffledMessageIndices.length];
         lantern.onclick = () => showLanternMessage(lantern, messages[messageIndex]);
 
@@ -594,16 +578,13 @@
     }
 
     function showLanternMessage(lantern, messageContent) {
-      // Thêm class clicked để tạm dừng animation
       lantern.classList.add('clicked');
       lantern.style.animationPlayState = 'paused';
 
-      // Thêm hiệu ứng cho lồng đèn trước khi hiển thị message
       lantern.style.transform = 'scale(1.1)';
       lantern.style.filter = 'drop-shadow(0 0 50px rgba(255,150,0,1)) brightness(1.3)';
       lantern.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 
-      // Tạo hiệu ứng rung nhẹ (nhanh hơn để cảm giác ngay lập tức)
       let shakeCount = 0;
       const shakeInterval = setInterval(() => {
         const isEven = shakeCount % 2 === 0;
@@ -611,33 +592,28 @@
           ? 'scale(1.1) rotate(2deg)'
           : 'scale(1.1) rotate(-2deg)';
         shakeCount++;
-        if (shakeCount >= 4) { // Giảm từ 6 xuống 4 để nhanh hơn
+        if (shakeCount >= 4) {
           clearInterval(shakeInterval);
           lantern.style.transform = 'scale(1)';
-          // Hiển thị message ngay lập tức sau khi hiệu ứng rung hoàn thành
           showMessage(messageContent);
         }
-      }, 60); // Giảm từ 80ms xuống 60ms để nhanh hơn
+      }, 60);
     }
 
     function showMessage(messageContent) {
       const messageContainer = document.getElementById('messageContainer');
       const messageContentDiv = document.getElementById('messageContent');
 
-      // Hiển thị container và nội dung ngay lập tức
       messageContainer.style.display = 'block';
       messageContentDiv.innerHTML = messageContent;
 
-      // Phát âm thanh nhẹ nhàng (nếu trình duyệt hỗ trợ)
       playSound();
     }
 
     function hideMessage() {
-      // Loại bỏ class clicked khỏi tất cả lồng đèn để chúng tiếp tục bay
       const lanterns = document.querySelectorAll('.lantern.clicked');
       lanterns.forEach(lantern => {
         lantern.classList.remove('clicked');
-        // Reset các style về trạng thái ban đầu để animation tiếp tục mượt mà
         lantern.style.transform = '';
         lantern.style.filter = '';
         lantern.style.animationPlayState = 'running';
@@ -647,18 +623,15 @@
     }
 
 
-    // Hàm phát âm thanh nhẹ nhàng khi mở thư
     function playSound() {
       try {
-        // Tạo âm thanh nhẹ nhàng bằng Web Audio API
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
 
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
-
-        // Cấu hình âm thanh nhẹ nhàng như chuông gió
+        
         oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
         oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.3);
 
@@ -668,12 +641,10 @@
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.3);
       } catch (error) {
-        // Nếu không thể phát âm thanh, bỏ qua silently
         console.log('Không thể phát âm thanh:', error.message);
       }
     }
 
-    // Thêm hiệu ứng ngôi sao
     function createStars() {
       const starsContainer = document.getElementById('stars');
       for(let i = 0; i < 100; i++) {
@@ -686,7 +657,6 @@
       }
     }
 
-    // Khởi tạo ngôi sao khi trang load xong
     window.addEventListener('load', createStars);
   </script>
 </body>
