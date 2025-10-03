@@ -1,0 +1,54 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: black;
+  color: white;
+  font-family: 'Dancing Script', cursive;
+  overflow: hidden;
+  text-align: center;
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro {
+  font-size: 1.8rem;
+  line-height: 1.6;
+  max-width: 90%;
+  animation: fade 6s ease-in-out forwards;
+  text-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+@keyframes fade {
+  0% {opacity: 0;}
+  50% {opacity: 1;}
+  100% {opacity: 0;}
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  .intro {
+    font-size: 1.5rem;
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .intro {
+    font-size: 1.3rem;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 320px) {
+  .intro {
+    font-size: 1.2rem;
+  }
+}
