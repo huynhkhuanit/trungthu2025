@@ -4,62 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intro</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      background: black;
-      color: white;
-      font-family: 'Dancing Script', cursive;
-      overflow: hidden;
-      text-align: center;
-      min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .intro {
-      font-size: 1.8rem;
-      line-height: 1.6;
-      max-width: 90%;
-      animation: fade 6s ease-in-out forwards;
-      text-shadow: 0 0 10px rgba(255,255,255,0.3);
-    }
-
-    @keyframes fade {
-      0% {opacity: 0;}
-      50% {opacity: 1;}
-      100% {opacity: 0;}
-    }
-
-    @media (max-width: 768px) {
-      body {
-        padding: 15px;
-      }
-
-      .intro {
-        font-size: 1.5rem;
-        max-width: 95%;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .intro {
-        font-size: 1.3rem;
-        line-height: 1.5;
-      }
-    }
-
-    @media (max-width: 320px) {
-      .intro {
-        font-size: 1.2rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/intro.css">
 </head>
 <body>
   <div class="intro">Sắp tới Trung Thu 2025 rồi cậu nhỉ? Trung thu này, tớ có món quà dành tặng cậu, vài lời tâm sự của tớ sẽ ẩn giấu trong lồng đèn, cậu hãy mở nó ra nhé!</div>
@@ -69,51 +14,7 @@
     Your browser does not support the audio element.
   </audio>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const backgroundMusic = document.getElementById('backgroundMusic');
-
-      function playBackgroundMusic() {
-        if (backgroundMusic) {
-          const savedTime = sessionStorage.getItem('audioCurrentTime');
-          const savedVolume = sessionStorage.getItem('audioVolume');
-
-          if (savedVolume) {
-            backgroundMusic.volume = parseFloat(savedVolume);
-          } else {
-            backgroundMusic.volume = 0.4;
-          }
-
-          backgroundMusic.play().then(() => {
-            if (savedTime) {
-              backgroundMusic.currentTime = parseFloat(savedTime);
-            }
-          }).catch(e => {
-            console.log('Không thể phát nhạc nền:', e.message);
-          });
-        }
-      }
-
-      playBackgroundMusic();
-
-      document.addEventListener('click', playBackgroundMusic, { once: true });
-      document.addEventListener('touchstart', playBackgroundMusic, { once: true });
-
-      function saveAudioState() {
-        if (backgroundMusic) {
-          sessionStorage.setItem('audioCurrentTime', backgroundMusic.currentTime.toString());
-          sessionStorage.setItem('audioVolume', backgroundMusic.volume.toString());
-        }
-      }
-
-      setInterval(saveAudioState, 1000);
-
-      window.addEventListener('beforeunload', saveAudioState);
-    });
-
-    setTimeout(()=>{
-      window.location.href = "main.html";
-    }, 6000);
-  </script>
+  <script src="js/music.js"></script>
+  <script src="js/intro.js"></script>
 </body>
 </html>
