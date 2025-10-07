@@ -24,6 +24,11 @@
     </div>
   </div>
 
+  <script>
+    if (sessionStorage.getItem('verified') !== 'true') {
+      window.location.href = 'index.html';
+    }
+  </script>
   <script src="js/music.js"></script>
   <script src="js/main.js"></script>
 </body>
