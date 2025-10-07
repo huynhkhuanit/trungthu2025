@@ -1,13 +1,14 @@
-function checkDOB() {
-  const dobInput = document.getElementById('dob').value;
+async function checkDOB() {
+  const dobInput = document.getElementById('dob');
+  const dobValue = dobInput.value;
 
   const datePattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-  if (!datePattern.test(dobInput)) {
+  if (!datePattern.test(dobValue)) {
     alert("Vui lòng nhập ngày sinh theo định dạng dd/mm/yyyy 😊");
     return;
   }
 
-  const [, day, month, year] = dobInput.match(datePattern);
+  const [, day, month, year] = dobValue.match(datePattern);
 
   const birthDate = new Date(year, month - 1, day);
   const isValidDate = birthDate.getDate() == day &&
@@ -19,31 +20,29 @@ function checkDOB() {
     return;
   }
 
-  const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  const correctHash = dobInput.getAttribute('data-hash');
 
-  const correctDateElement = document.getElementById('dob');
-  const encodedDate = correctDateElement.getAttribute('data-birth');
-
-  if (!encodedDate) {
+  if (!correctHash) {
     alert("Có lỗi xảy ra! Vui lòng thử lại.");
     return;
   }
 
-  function decodeDate(encoded) {
-    return encoded.split('/').map(part =>
-      part.split('').reverse().join('')
-    ).join('/');
-  }
+  try {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(dobValue);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-  const correctDateInput = decodeDate(encodedDate);
-
-  const [correctDay, correctMonth, correctYear] = correctDateInput.split('/');
-  const correctFormattedDate = `${correctYear}-${correctMonth.padStart(2, '0')}-${correctDay.padStart(2, '0')}`;
-
-  if(formattedDate === correctFormattedDate) {
-    window.location.href = "intro.html";
-  } else {
-    alert("Sai rồi nha 😜, chỉ có cậu mới vào được!");
+    if (inputHash === correctHash) {
+      sessionStorage.setItem('verified', 'true');
+      window.location.href = "intro.html";
+    } else {
+      alert("Sai rồi nha 😜, chỉ có cậu mới vào được!");
+    }
+  } catch (error) {
+    console.error("Hashing error:", error);
+    alert("Đã xảy ra lỗi khi xác thực. Vui lòng thử lại.");
   }
 }
 
